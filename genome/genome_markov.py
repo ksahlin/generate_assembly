@@ -7,16 +7,16 @@ import random
 #import sys
 #import check_GC_content
 import argparse
-import Genome2
+import genome_diploid
 from collections import Counter
 
 # Markov Chain: Transition matrix
 transition = {
-    'Sub' : {'Sub':0.8, 'TDup':0.08, 'IDup':0.02, 'Ins':0.05,'Inv':0.05},
-    'TDup' : {'Sub':0.8, 'TDup':0.06, 'IDup':0.03, 'Ins':0.055,'Inv':0.055},
-    'IDup' : {'Sub':0.8, 'TDup':0.085, 'IDup':0.01, 'Ins':0.0525,'Inv':0.0525},
-    'Ins' : {'Sub':0.8, 'TDup':0.085, 'IDup':0.025, 'Ins':0.03,'Inv':0.06},
-    'Inv' : {'Sub':0.8, 'TDup':0.085, 'IDup':0.025, 'Ins':0.06,'Inv':0.03}}
+    'Sub' : {'Sub':0.99, 'TDup':0.001, 'IDup':0.001, 'Ins':0.004,'Inv':0.004},
+    'TDup' : {'Sub':0.99, 'TDup':0.006, 'IDup':0.001, 'Ins':0.001,'Inv':0.001},
+    'IDup' : {'Sub':0.99, 'TDup':0.001, 'IDup':0.003, 'Ins':0.005,'Inv':0.001},
+    'Ins' : {'Sub':0.99, 'TDup':0.002, 'IDup':0.002, 'Ins':0.003,'Inv':0.003},
+    'Inv' : {'Sub':0.99, 'TDup':0.001, 'IDup':0.002, 'Ins':0.003,'Inv':0.004}}
 
 ##transition = {
 ##    'Sub' : {'Sub':0.1, 'TDup':0.4, 'IDup':0.2, 'Ins':0.1,'Inv':0.2},
@@ -201,13 +201,80 @@ def new_state(genome, finish_length):
 
 
 def count_kmers(genome,k):
-    kmer_counter= Counter()
+    kmer_counter = Counter()
     for i in range(len(genome)-k+1):
         kmer_counter[genome[i:i+k]] += 1
-        if i % 10000 == 0:
-            print i
+        #if i % 10000 == 0:
+        #    print i
+    
+    return Counter(map(lambda x: x[1],kmer_counter.most_common()))
 
-    print kmer_counter.most_common(10)
+
+def generate_genome(genome, length):
+    #genome = [random.choice(['A','C','G','T']) for i in range(200)]
+    genome = new_state(genome, length)
+    genome_str = "".join(genome)
+    return genome_str
+
+
+class Genome(object):
+    """docstring for Genome"""
+    def __init__(self,probs, length,accession):
+        super(Genome, self).__init__()
+        self.probs = probs
+        self.length = length
+        self.accession = accession
+
+        self.genome() # generate a strand
+
+    def generate_bp(self, bp):
+        """
+        Generates base pairs according to the given
+        distribution.
+        
+        @param probs A list of probabilities for each base pair.
+        @param bp A list of base pairs.
+        """
+        rand = random.random( )
+        total = 0.0
+        for i in range( len( self.probs ) ):
+            total += self.probs[ i ]
+            if rand <= total:
+                return bp[ i ]
+
+    def genome(self):
+        """
+        Generates the genome a returns it.
+            
+        @param probs Base pair probabilities.
+        @param length Length of the genome.
+        
+        @return The sequence of the generated genome.
+        
+        """
+        bp = "ACGT"
+        self.sequence = ''.join( self.generate_bp( bp ) for i in range( self.length ) )
+
+    def diploid_copy(self,insertion_rate, deletion_rate, mutation_rate,accession):
+        self.copy = ''
+        self.diploid_accession = accession
+        for i in range(len(self.sequence)):
+            if random.uniform(0,1) < mutation_rate:
+                self.copy = ''.join([i for i in [self.sequence[0:i],mutation(),self.sequence[i+1:]]])
+                continue
+            if random.uniform(0,1) < deletion_rate:
+                self.copy = ''.join([i for i in [self.sequence[0:i-deletion()],self.sequence[i:]]])
+                continue
+            if random.uniform(0,1) < insertion_rate:
+                self.copy = ''.join([i for i in [self.sequence[0:i],insertion(),self.sequence[i:]]])
+                continue
+
+    def genome_fasta_format(self):
+        return '>{0}\n{1}'.format(self.accession,self.sequence)
+
+    def diploid_copy_fasta(self):
+        return '>{0}\n{1}'.format(self.diploid_accession,self.copy)
+        
 
 
 

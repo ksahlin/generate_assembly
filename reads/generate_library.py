@@ -185,65 +185,6 @@ class MatePairRead(object):
 
 
 
-class Genome(object):
-    """docstring for Genome"""
-    def __init__(self,probs, length,accession):
-        super(Genome, self).__init__()
-        self.probs = probs
-        self.length = length
-        self.accession = accession
-
-        self.genome() # generate a strand
-
-    def generate_bp(self, bp):
-        """
-        Generates base pairs according to the given
-        distribution.
-        
-        @param probs A list of probabilities for each base pair.
-        @param bp A list of base pairs.
-        """
-        rand = random.random( )
-        total = 0.0
-        for i in range( len( self.probs ) ):
-            total += self.probs[ i ]
-            if rand <= total:
-                return bp[ i ]
-
-    def genome(self):
-        """
-        Generates the genome a returns it.
-            
-        @param probs Base pair probabilities.
-        @param length Length of the genome.
-        
-        @return The sequence of the generated genome.
-        
-        """
-        bp = "ACGT"
-        self.sequence = ''.join( self.generate_bp( bp ) for i in range( self.length ) )
-
-    def diploid_copy(self,insertion_rate, deletion_rate, mutation_rate,accession):
-        self.copy = ''
-        self.diploid_accession = accession
-        for i in range(len(self.sequence)):
-            if random.uniform(0,1) < mutation_rate:
-                self.copy = ''.join([i for i in [self.sequence[0:i],mutation(),self.sequence[i+1:]]])
-                continue
-            if random.uniform(0,1) < deletion_rate:
-                self.copy = ''.join([i for i in [self.sequence[0:i-deletion()],self.sequence[i:]]])
-                continue
-            if random.uniform(0,1) < insertion_rate:
-                self.copy = ''.join([i for i in [self.sequence[0:i],insertion(),self.sequence[i:]]])
-                continue
-
-    def genome_fasta_format(self):
-        return '>{0}\n{1}'.format(self.accession,self.sequence)
-
-    def diploid_copy_fasta(self):
-        return '>{0}\n{1}'.format(self.diploid_accession,self.copy)
-        
-
 
 class Transcriptome(object):
     """docstring for Transcriptome"""
@@ -335,7 +276,7 @@ class Transcript(object):
 
 class DNAseq(object):
     """docstring for DNAseq"""
-    def __init__(self,lib_mean,lib_std_dev,lib_read_length,contamination_rate = 0,contamine_mean= None,contamine_std_dev= None):
+    def __init__(self,lib_read_length,coverage, lib_mean,lib_std_dev,contamination_rate = 0,contamine_mean= None,contamine_std_dev= None):
         super(DNAseq, self).__init__()
 
         self.lib_mean = lib_mean
@@ -344,14 +285,15 @@ class DNAseq(object):
         self.contamination_rate = contamination_rate
         self.contamine_mean = contamine_mean
         self.contamine_std_dev = contamine_std_dev
+        self.coverage = coverage
     
-    def simulate_pe_reads(self,genome,coverage):
+    def simulate_pe_reads(self,genome):
         """
         Arguments:
 
         """
         genome_length = len(genome.sequence)
-        number_of_reads=(genome_length*coverage)/(2*self.lib_read_length)     #Specifiels the number of simulated read pairs (related to insertion size length of genome and coverage
+        number_of_reads=(genome_length*self.coverage)/(2*self.lib_read_length)     #Specifiels the number of simulated read pairs (related to insertion size length of genome and coverage
     
         self.reads = []
         
@@ -361,13 +303,13 @@ class DNAseq(object):
             read_pair.generate(genome.accession.replace(" ",""), genome.sequence, i, self.lib_mean,self.lib_std_dev,self.lib_read_length)        
             self.reads.append(read_pair)
 
-    def simulate_mp_reads(self,genome,coverage):
+    def simulate_mp_reads(self,genome):
         """
         Arguments:
 
         """
         genome_length = len(genome.sequence)
-        number_of_reads=(genome_length*coverage)/(2*self.lib_read_length)     #Specifiels the number of simulated read pairs (related to insertion size length of genome and coverage
+        number_of_reads=(genome_length*self.coverage)/(2*self.lib_read_length)     #Specifiels the number of simulated read pairs (related to insertion size length of genome and coverage
     
         self.reads = []
         
