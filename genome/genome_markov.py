@@ -176,8 +176,8 @@ def new_state(genome, finish_length):
     counter = 0
     while genome_length < finish_length:
         counter += 1
-        if counter % 100 == 0:
-            print genome_length
+        #if counter % 100 == 0:
+        #    print genome_length
         current_state = probability_func(transition[current_state])
         if current_state == 'Sub':
             genome = Sub(genome)

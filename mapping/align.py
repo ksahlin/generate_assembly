@@ -60,7 +60,6 @@ def map_paired_reads(pe1_path, pe2_path, genome_path, output_path, args):
     else:
         sam_to_bam( bwa_output, bwa_output + ".bam" )
         if args.sort:
-            print 'here'
             # coordinate sort the file
             pysam.sort( bwa_output + ".bam", output_path )
             pysam.index(output_path+'.bam')

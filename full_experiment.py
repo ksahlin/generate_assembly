@@ -114,11 +114,13 @@ def main():
 
     #reads
 
+    read_lib_paths = []
     for lib in cfg.libs:
         if lib.contamination_rate:
             lib.simulate_mp_reads(genome)
             read1_file = open(os.path.join(cfg.output_path,'MP.{0}.1.fa'.format(lib.lib_mean)), 'w')
             read2_file = open(os.path.join(cfg.output_path,'MP.{0}.2.fa'.format(lib.lib_mean)), 'w')
+            read_lib_paths.append((read1_file,read2_file))
             read_iterator = lib.fasta_format()
             for read1 in read_iterator:
                 read2 = read_iterator.next()
@@ -128,6 +130,7 @@ def main():
             lib.simulate_pe_reads(genome)
             read1_file = open(os.path.join(cfg.output_path,'PE.{0}.1.fa'.format(lib.lib_mean)), 'w')
             read2_file = open(os.path.join(cfg.output_path,'PE.{0}.2.fa'.format(lib.lib_mean)), 'w')
+            read_lib_paths.append((read1_file,read2_file))
             read_iterator = lib.fasta_format()
             for read1 in read_iterator:
                 read2 = read_iterator.next()
@@ -142,6 +145,13 @@ def main():
         stderr = open( os.path.join(cfg.output_path,'minia.stderr'),'w') )
 
 
+    # alignment
+    for i,lib in enumerate(read_lib_paths):
+        #subprocess.check_call( [ "python","mapping/align.py"])
+        subprocess.check_call( [ "python", "mapping/align.py", read1_file.name, read2_file.name, 
+            os.path.join(cfg.output_path,'minia.contigs.fa'), os.path.join(cfg.output_path,'mapped.{0}-{1}'.format(cfg.libs[i].lib_mean, cfg.libs[i].lib_std_dev)) , '-sort' ], 
+            stdout = open( os.path.join(cfg.output_path,'bwa.stdout'),'w'), 
+            stderr = open( os.path.join(cfg.output_path,'bwa.stderr'),'w') )
 
 
     # ctg_file = open(os.path.join(args.outfolder,'contigs.fa'), 'w')
