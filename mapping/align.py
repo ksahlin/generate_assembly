@@ -131,6 +131,49 @@ def bwa_mem(pe1_path, pe2_path, genome_path, output_path, args):
     # pysam.sort(bwa_output + ".bam", output_path)
     # pysam.index(output_path + '.bam')
 
+def bowtie(pe1_path, pe2_path, genome_path, output_path, args):
+    print 'Aligning with bowtie'
+    start = time()
+    work_dir = tempfile.mkdtemp()
+    genome_db = os.path.join(work_dir, "genome")
+    pe1_output = os.path.join(work_dir, "pe1.sai")
+    pe2_output = os.path.join(work_dir, "pe2.sai")
+    bowtie_output1 = os.path.join(work_dir, "bowtie1.sam")
+    bowtie_output2 = os.path.join(work_dir, "bowtie2.sam")
+    stderr_file = open(output_path+'.bowtie.1','w')
+
+    #null = open("/dev/null")
+    subprocess.check_call([ "bowtie-build", genome_path, genome_db ], stderr=stderr_file)
+    with open(bowtie_output1, "w") as bowtie_file:
+        subprocess.check_call([ "bowtie", "-f", "-S",
+                                genome_db, pe1_path ],
+                              stdout=bowtie_file,
+                              stderr=stderr_file)
+
+    with open(bowtie_output2, "w") as bowtie_file:
+        subprocess.check_call([ "bowtie", "-f", "-S",
+                                genome_db, pe2_path ],
+                              stdout=bowtie_file,
+                              stderr=stderr_file)
+
+    elapsed = time() - start
+    print 'Time elapsed for bowtie: ', elapsed
+
+    if args.sam:
+        os.rename(bowtie_output1 ,output_path+'1.sam')
+        os.rename(bowtie_output2 ,output_path+'2.sam')
+    else:
+        sam_to_bam( bowtie_output1, bowtie_output + "1.bam" )
+        sam_to_bam( bowtie_output2, bowtie_output + "2.bam" )
+        # if args.sort:
+        #     print 'here'
+        #     # coordinate sort the file
+        #     pysam.sort( bowtie_output + ".bam", output_path )
+        #     pysam.index(output_path+'.bam')
+        # else:
+        #     os.rename(bwa_output + ".bam",output_path+'.bam')
+
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser( description="Map reads with bwa." )
@@ -144,12 +187,15 @@ if __name__ == '__main__':
     parser.add_argument('--threads', type=str, dest='threads', default='8', required=False, help='Number of threads for bwa mem.')
     parser.add_argument('--mem', dest='mem', action="store_true", required=False,
                         help='Align with bwa mem.')
-
+    parser.add_argument('--bowtie', dest='bowtie', action="store_true", required=False,
+                        help='Align reads with bowtie.')
 
     args = parser.parse_args( )
 
     if args.mem:
         bwa_mem( args.pe1_path, args.pe2_path, args.genome_path, args.output_path, args )
+    elif args.bowtie:
+        bowtie( args.pe1_path, args.pe2_path, args.genome_path, args.output_path, args )
 
     if args.pe2_path:
         map_paired_reads( args.pe1_path, args.pe2_path, args.genome_path, args.output_path, args )

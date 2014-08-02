@@ -111,7 +111,9 @@ def main():
     print >> kmer_count_file, 'k=41', genome_markov.count_kmers(genome.sequence, 41)
     print >> kmer_count_file, 'k=51', genome_markov.count_kmers(genome.sequence, 51)
     print >> kmer_count_file, 'k=61', genome_markov.count_kmers(genome.sequence, 61)
-
+    print >> kmer_count_file, 'k=101', genome_markov.count_kmers(genome.sequence, 101)
+    print >> kmer_count_file, 'k=150', genome_markov.count_kmers(genome.sequence, 150)
+    print >> kmer_count_file, 'k=200', genome_markov.count_kmers(genome.sequence, 200)
     #reads
 
     read_lib_paths = []
@@ -146,13 +148,22 @@ def main():
 
 
     # alignment
-    for i,lib in enumerate(read_lib_paths):
+    for i,(read1_file,read2_file) in enumerate(read_lib_paths):
         #subprocess.check_call( [ "python","mapping/align.py"])
         subprocess.check_call( [ "python", "mapping/align.py", read1_file.name, read2_file.name, 
             os.path.join(cfg.output_path,'minia.contigs.fa'), os.path.join(cfg.output_path,'mapped.{0}-{1}'.format(cfg.libs[i].lib_mean, cfg.libs[i].lib_std_dev)) , '-sort' ], 
             stdout = open( os.path.join(cfg.output_path,'bwa.stdout'),'w'), 
             stderr = open( os.path.join(cfg.output_path,'bwa.stderr'),'w') )
 
+    #bwa mem
+    for i,(read1_file,read2_file) in enumerate(read_lib_paths):
+        #subprocess.check_call( [ "python","mapping/align.py"])
+        subprocess.check_call( [ "python", "mapping/align.py", read1_file.name, read2_file.name, 
+            os.path.join(cfg.output_path,'minia.contigs.fa'), os.path.join(cfg.output_path,
+                'mapped_mem.{0}-{1}'.format(cfg.libs[i].lib_mean, cfg.libs[i].lib_std_dev)) , 
+            '-sort', '--mem' ], 
+            stdout = open( os.path.join(cfg.output_path,'bwa_mem.{0}-{1}.stdout'.format(cfg.libs[i].lib_mean, cfg.libs[i].lib_std_dev)),'w'), 
+            stderr = open( os.path.join(cfg.output_path,'bwa_mem.{0}-{1}.stderr'.format(cfg.libs[i].lib_mean, cfg.libs[i].lib_std_dev)),'w') )
 
     # ctg_file = open(os.path.join(args.outfolder,'contigs.fa'), 'w')
     # map_file = os.path.join(args.outfolder,'mapped')

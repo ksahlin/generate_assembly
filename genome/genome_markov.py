@@ -18,14 +18,19 @@ transition = {
     'Ins' : {'Sub':0.99, 'TDup':0.002, 'IDup':0.002, 'Ins':0.003,'Inv':0.003},
     'Inv' : {'Sub':0.99, 'TDup':0.001, 'IDup':0.002, 'Ins':0.003,'Inv':0.004}}
 
-##transition = {
-##    'Sub' : {'Sub':0.1, 'TDup':0.4, 'IDup':0.2, 'Ins':0.1,'Inv':0.2},
-##    'TDup' : {'Sub':0.1, 'TDup':0.25, 'IDup':0.25, 'Ins':0.15,'Inv':0.25},
-##    'IDup' : {'Sub':0.1, 'TDup':0.45, 'IDup':0.1, 'Ins':0.1,'Inv':0.25},
-##    'Ins' : {'Sub':0.1, 'TDup':0.425, 'IDup':0.225, 'Ins':0.05,'Inv':0.2},
-##    'Inv' : {'Sub':0.1, 'TDup':0.45, 'IDup':0.25, 'Ins':0.1,'Inv':0.1}}
+# transition = {
+#     'Sub' : {'Sub':0.95, 'TDup':0.00, 'IDup':0.03, 'Ins':0.01,'Inv':0.01},
+#     'TDup' : {'Sub':0.95, 'TDup':0.00, 'IDup':0.03, 'Ins':0.01,'Inv':0.01},
+#     'IDup' : {'Sub':0.95, 'TDup':0.00, 'IDup':0.03, 'Ins':0.01,'Inv':0.01},
+#     'Ins' : {'Sub':0.95, 'TDup':0.00, 'IDup':0.03, 'Ins':0.01,'Inv':0.01},
+#     'Inv' : {'Sub':0.95, 'TDup':0.00, 'IDup':0.03, 'Ins':0.01,'Inv':0.01}}
 
-
+transition = {
+    'Sub' : {'Sub':0.995, 'TDup':0.00, 'IDup':0.003, 'Ins':0.01,'Inv':0.001},
+    'TDup' : {'Sub':0.995, 'TDup':0.00, 'IDup':0.003, 'Ins':0.01,'Inv':0.001},
+    'IDup' : {'Sub':0.995, 'TDup':0.00, 'IDup':0.003, 'Ins':0.01,'Inv':0.001},
+    'Ins' : {'Sub':0.995, 'TDup':0.00, 'IDup':0.003, 'Ins':0.01,'Inv':0.001},
+    'Inv' : {'Sub':0.995, 'TDup':0.00, 'IDup':0.003, 'Ins':0.01,'Inv':0.001}}
 
 
 
