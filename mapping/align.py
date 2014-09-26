@@ -66,7 +66,7 @@ def map_paired_reads(pe1_path, pe2_path, genome_path, output_path, args):
             pysam.sort( bwa_output + ".bam", output_path )
             pysam.index(output_path+'.bam')
         else:
-            shutil.move(bwa_output ,output_path+'.bam')
+            shutil.move(bwa_output +".bam",output_path+'.bam')
             #os.rename(bwa_output + ".bam",output_path+'.bam')
 
     #else:
