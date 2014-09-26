@@ -5,6 +5,7 @@ import os
 import subprocess
 import sys
 import tempfile
+import shutil
 
 import pysam
 from time import time
@@ -56,7 +57,8 @@ def map_paired_reads(pe1_path, pe2_path, genome_path, output_path, args):
 
 
     if args.sam:
-        os.rename(bwa_output ,output_path+'.sam')
+        shutil.move(bwa_output ,output_path+'.sam')
+        #os.rename(bwa_output ,output_path+'.sam')
     else:
         sam_to_bam( bwa_output, bwa_output + ".bam" )
         if args.sort:
@@ -64,7 +66,8 @@ def map_paired_reads(pe1_path, pe2_path, genome_path, output_path, args):
             pysam.sort( bwa_output + ".bam", output_path )
             pysam.index(output_path+'.bam')
         else:
-            os.rename(bwa_output + ".bam",output_path+'.bam')
+            shutil.move(bwa_output ,output_path+'.bam')
+            #os.rename(bwa_output + ".bam",output_path+'.bam')
 
     #else:
     #    os.rename(bwa_output + ".bam",output_path+'.bam')
@@ -87,7 +90,8 @@ def map_single_reads(pe_path, genome_path, output_path):
                                 pe_output,
                                 pe_path ], stdout = bwa_file, stderr = null )
 
-    os.popen('mv '+bwa_output + ' '+ output_path)
+    shutil.move(bwa_output ,output_path+'.bam')
+    #os.popen('mv '+bwa_output + ' '+ output_path)
 
     #sam_to_bam( bwa_output, bwa_output + ".bam" )
     #pysam.sort( bwa_output + ".bam", output_path )
@@ -116,7 +120,8 @@ def bwa_mem(pe1_path, pe2_path, genome_path, output_path, args):
     print 'Time elapsed for bwa mem: ', elapsed
 
     if args.sam:
-        os.rename(bwa_output ,output_path+'.sam')
+        shutil.move(bwa_output ,output_path+'.sam')
+        #os.rename(bwa_output ,output_path+'.sam')
     else:
         sam_to_bam( bwa_output, bwa_output + ".bam" )
         if args.sort:
@@ -125,7 +130,8 @@ def bwa_mem(pe1_path, pe2_path, genome_path, output_path, args):
             pysam.sort( bwa_output + ".bam", output_path )
             pysam.index(output_path+'.bam')
         else:
-            os.rename(bwa_output + ".bam",output_path+'.bam')
+            shutil.move(bwa_output +".bam",output_path+'.bam')
+            #os.rename(bwa_output + ".bam",output_path+'.bam')
 
     # sam_to_bam(bwa_output, bwa_output + ".bam")
     # pysam.sort(bwa_output + ".bam", output_path)
@@ -160,11 +166,13 @@ def bowtie(pe1_path, pe2_path, genome_path, output_path, args):
     print 'Time elapsed for bowtie: ', elapsed
 
     if args.sam:
-        os.rename(bowtie_output1 ,output_path+'1.sam')
-        os.rename(bowtie_output2 ,output_path+'2.sam')
+        shutil.move(bowtie_output1 ,output_path+'1.sam')
+        #os.rename(bowtie_output1 ,output_path+'1.sam')
+        shutil.move(bowtie_output2 ,output_path+'2.sam')
+        #os.rename(bowtie_output2 ,output_path+'2.sam')
     else:
-        sam_to_bam( bowtie_output1, bowtie_output + "1.bam" )
-        sam_to_bam( bowtie_output2, bowtie_output + "2.bam" )
+        sam_to_bam( bowtie_output1, output_path + "1.bam" )
+        sam_to_bam( bowtie_output2, output_path + "2.bam" )
         # if args.sort:
         #     print 'here'
         #     # coordinate sort the file

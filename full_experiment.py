@@ -165,6 +165,17 @@ def main():
             stdout = open( os.path.join(cfg.output_path,'bwa_mem.{0}-{1}.stdout'.format(cfg.libs[i].lib_mean, cfg.libs[i].lib_std_dev)),'w'), 
             stderr = open( os.path.join(cfg.output_path,'bwa_mem.{0}-{1}.stderr'.format(cfg.libs[i].lib_mean, cfg.libs[i].lib_std_dev)),'w') )
 
+    # bowtie
+    for i,(read1_file,read2_file) in enumerate(read_lib_paths):
+        #subprocess.check_call( [ "python","mapping/align.py"])
+        subprocess.check_call( [ "python", "mapping/align.py", read1_file.name, read2_file.name, 
+            os.path.join(cfg.output_path,'minia.contigs.fa'), os.path.join(cfg.output_path,
+                'mapped_bowtie.{0}-{1}.'.format(cfg.libs[i].lib_mean, cfg.libs[i].lib_std_dev)) , 
+            '--bowtie'], 
+            stdout = open( os.path.join(cfg.output_path,'bowtie.{0}-{1}.stdout'.format(cfg.libs[i].lib_mean, cfg.libs[i].lib_std_dev)),'w'), 
+            stderr = open( os.path.join(cfg.output_path,'bowtie.{0}-{1}.stderr'.format(cfg.libs[i].lib_mean, cfg.libs[i].lib_std_dev)),'w') )
+
+
     # ctg_file = open(os.path.join(args.outfolder,'contigs.fa'), 'w')
     # map_file = os.path.join(args.outfolder,'mapped')
 
